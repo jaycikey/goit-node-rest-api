@@ -1,8 +1,13 @@
 import express from "express";
+import connectDB from "./db/db.js";
 import morgan from "morgan";
 import cors from "cors";
 
 import contactsRouter from "./routes/contactsRouter.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+connectDB();
 
 const app = express();
 

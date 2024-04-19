@@ -4,6 +4,7 @@ import {
   removeContact,
   addContact,
   updateContact,
+  updateContactFavorite,
 } from "../services/contactsServices.js";
 
 export const getAllContacts = async (req, res) => {
@@ -72,5 +73,21 @@ export const updateContactController = async (req, res) => {
     } else {
       res.status(500).json({ message: error.message });
     }
+  }
+};
+
+export const updateFavorite = async (req, res) => {
+  const { contactId } = req.params;
+  const { favorite } = req.body;
+
+  try {
+    const updatedContact = await updateContactFavorite(contactId, favorite);
+    if (updatedContact) {
+      res.json(updatedContact);
+    } else {
+      res.status(404).json({ message: "Not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
