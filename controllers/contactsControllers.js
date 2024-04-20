@@ -7,87 +7,75 @@ import {
   updateContactFavorite,
 } from "../services/contactsServices.js";
 
-export const getAllContacts = async (req, res) => {
+export const getAllContacts = async (req, res, next) => {
   try {
     const contacts = await listContacts();
     res.json(contacts);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const getOneContact = async (req, res) => {
+export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
   try {
     const contact = await getContactById(id);
-    if (contact) {
-      res.json(contact);
-    } else {
-      res.status(404).json({ message: "Not found" });
+    if (!contact) {
+      return res.status(404).json({ message: "Not found" });
     }
+    res.json(contact);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const deleteContact = async (req, res) => {
+export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
   try {
     const contact = await removeContact(id);
-    if (contact) {
-      res.json(contact);
-    } else {
-      res.status(404).json({ message: "Not found" });
+    if (!contact) {
+      return res.status(404).json({ message: "Not found" });
     }
+    res.json(contact);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const createContact = async (req, res) => {
+export const createContact = async (req, res, next) => {
   try {
     const { name, email, phone } = req.body;
     const newContact = await addContact(name, email, phone);
     res.status(201).json(newContact);
   } catch (error) {
-    if (error.isJoi) {
-      res.status(400).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 };
 
-export const updateContactController = async (req, res) => {
+export const updateContactController = async (req, res, next) => {
   const { id } = req.params;
   try {
     const updatedContact = await updateContact(id, req.body);
-    if (updatedContact) {
-      res.json(updatedContact);
-    } else {
-      res.status(404).json({ message: "Not found" });
+    if (!updatedContact) {
+      return res.status(404).json({ message: "Not found" });
     }
+    res.json(updatedContact);
   } catch (error) {
-    if (error.isJoi) {
-      res.status(400).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+    next(error);
   }
 };
 
-export const updateFavorite = async (req, res) => {
+export const updateFavorite = async (req, res, next) => {
   const { contactId } = req.params;
   const { favorite } = req.body;
 
   try {
     const updatedContact = await updateContactFavorite(contactId, favorite);
-    if (updatedContact) {
-      res.json(updatedContact);
-    } else {
-      res.status(404).json({ message: "Not found" });
+    if (!updatedContact) {
+      return res.status(404).json({ message: "Not found" });
     }
+    res.json(updatedContact);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
