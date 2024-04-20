@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import cors from "cors";
+import usersRouter from "./routes/usersRouter.js";
 import contactsRouter from "./routes/contactsRouter.js";
 import dotenv from "dotenv";
 
@@ -13,6 +14,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/users", usersRouter);
 app.use("/api/contacts", contactsRouter);
 
 const connectDB = async () => {

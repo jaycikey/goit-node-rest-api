@@ -8,8 +8,13 @@ import {
 } from "../services/contactsServices.js";
 
 export const getAllContacts = async (req, res, next) => {
+  const { page, limit, favorite } = req.query;
   try {
-    const contacts = await listContacts();
+    const contacts = await listContacts(
+      parseInt(page),
+      parseInt(limit),
+      favorite
+    );
     res.json(contacts);
   } catch (error) {
     next(error);

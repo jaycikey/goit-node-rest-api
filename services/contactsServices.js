@@ -1,7 +1,12 @@
 import Contact from "../models/Contact.js";
 
-async function listContacts() {
-  return await Contact.find({});
+async function listContacts(page = 1, limit = 10, favorite) {
+  const skip = (page - 1) * limit;
+  let query = {};
+  if (favorite !== undefined) {
+    query.favorite = favorite === "true";
+  }
+  return await Contact.find(query).skip(skip).limit(limit);
 }
 
 async function getContactById(contactId) {
