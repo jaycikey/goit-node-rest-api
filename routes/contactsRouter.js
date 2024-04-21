@@ -14,8 +14,8 @@ import {
   createContactSchema,
   updateContactSchema,
   updateFavoriteSchema,
+  paginationSchema,
 } from "../schemas/contactsSchemas.js";
-import paginationSchema from "../schemas/paginationSchema.js";
 
 const contactsRouter = express.Router();
 
