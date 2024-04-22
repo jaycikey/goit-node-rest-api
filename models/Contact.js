@@ -5,8 +5,11 @@ const contactSchema = new mongoose.Schema({
   email: { type: String },
   phone: { type: String },
   favorite: { type: Boolean, default: false },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 const Contact = mongoose.model("Contact", contactSchema);
-
 export default Contact;
