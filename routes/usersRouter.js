@@ -1,10 +1,12 @@
 import express from "express";
+import { upload } from "../config/multerConfig.js";
 import {
   register,
   login,
   logout,
   currentUser,
   updateSubscription,
+  patchAvatar,
 } from "../controllers/usersControllers.js";
 import authenticate from "../middleware/authenticate.js";
 import validateBody from "../helpers/validateBody.js";
@@ -24,6 +26,12 @@ usersRouter.patch(
   authenticate,
   validateBody(updateSubscriptionSchema),
   updateSubscription
+);
+usersRouter.patch(
+  "/avatars",
+  authenticate,
+  upload.single("avatar"),
+  patchAvatar
 );
 
 export default usersRouter;
