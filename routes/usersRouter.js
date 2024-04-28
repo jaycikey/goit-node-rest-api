@@ -7,12 +7,15 @@ import {
   currentUser,
   updateSubscription,
   patchAvatar,
+  verifyEmail,
+  resendVerificationEmail,
 } from "../controllers/usersControllers.js";
 import authenticate from "../middleware/authenticate.js";
 import validateBody from "../helpers/validateBody.js";
 import {
   userRegisterSchema,
   updateSubscriptionSchema,
+  resendVerificationSchema,
 } from "../schemas/userSchemas.js";
 
 const usersRouter = express.Router();
@@ -32,6 +35,14 @@ usersRouter.patch(
   authenticate,
   upload.single("avatar"),
   patchAvatar
+);
+
+usersRouter.get("/verify/:verificationToken", verifyEmail);
+
+usersRouter.post(
+  "/verify/resend",
+  validateBody(resendVerificationSchema),
+  resendVerificationEmail
 );
 
 export default usersRouter;

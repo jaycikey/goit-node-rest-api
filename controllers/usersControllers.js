@@ -9,10 +9,12 @@ import User from "../models/User.js";
 import fs from "fs/promises";
 import path from "path";
 import jimp from "jimp";
+import sgMail from "@sendgrid/mail";
 
 export const register = async (req, res, next) => {
   try {
-    const user = await registerUser(req.body);
+    const host = req.headers.host;
+    const user = await registerUser(req.body, host);
     res.status(201).json(user);
   } catch (error) {
     next(error);
@@ -82,6 +84,51 @@ export const patchAvatar = async (req, res, next) => {
     res.status(200).json({ avatarURL });
   } catch (error) {
     await fs.unlink(req.file.path); // Cleanup if something goes wrong
+    next(error);
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { verificationToken } = req.params;
+    const user = await User.findOneAndUpdate(
+      { verificationToken },
+      { $set: { verify: true, verificationToken: null } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Verification successful" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const resendVerificationEmail = async (req, res, next) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email, verify: false });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found or already verified" });
+    }
+
+    const verificationUrl = `http://${req.headers.host}/api/users/verify/${user.verificationToken}`;
+    const mailOptions = {
+      to: email,
+      from: "jaycikey@gmail.com",
+      subject: "Verify your email",
+      text: `Please click on the following link to verify your email: ${verificationUrl}`,
+      html: `<strong>Please click on the following link to verify your email:</strong> <a href="${verificationUrl}">${verificationUrl}</a>`,
+    };
+
+    await sgMail.send(mailOptions);
+    res.status(200).json({ message: "Verification email sent" });
+  } catch (error) {
     next(error);
   }
 };
