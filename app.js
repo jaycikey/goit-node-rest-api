@@ -7,8 +7,10 @@ import cors from "cors";
 import usersRouter from "./routes/usersRouter.js";
 import contactsRouter from "./routes/contactsRouter.js";
 import dotenv from "dotenv";
+import sgMail from "@sendgrid/mail";
 
 dotenv.config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);

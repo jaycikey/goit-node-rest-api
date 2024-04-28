@@ -20,6 +20,26 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   avatarURL: String,
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: [true, "Verify token is required"],
+  },
+});
+
+// Middleware, яке динамічно змінює валідацію verificationToken
+userSchema.pre("validate", function (next) {
+  if (this.verify) {
+    // Якщо користувач верифікований, зніміть вимогу до verificationToken
+    this.constructor.schema.path("verificationToken").required(false);
+  } else {
+    // Якщо користувач не верифікований, залиште verificationToken як обов'язкове поле
+    this.constructor.schema.path("verificationToken").required(true);
+  }
+  next();
 });
 
 const User = mongoose.model("User", userSchema);
