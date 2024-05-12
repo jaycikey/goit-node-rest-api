@@ -12,6 +12,9 @@ import {
 } from "../controllers/usersControllers.js";
 import authenticate from "../middleware/authenticate.js";
 import validateBody from "../helpers/validateBody.js";
+
+import { updateUser } from '../controllers/usersControllers.js';
+import { updateUserSchema } from '../schemas/userSchemas.js';
 import {
   userRegisterSchema,
   updateSubscriptionSchema,
@@ -23,6 +26,12 @@ const usersRouter = express.Router();
 usersRouter.post("/register", validateBody(userRegisterSchema), register);
 usersRouter.post("/login", validateBody(userRegisterSchema), login);
 usersRouter.post("/logout", authenticate, logout);
+usersRouter.patch(
+  "/update/:id",
+  authenticate,
+  validateBody(updateUserSchema),
+  updateUser
+);
 usersRouter.get("/current", authenticate, currentUser);
 usersRouter.patch(
   "/subscription",

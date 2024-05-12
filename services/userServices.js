@@ -6,7 +6,7 @@ import HttpError from "../helpers/HttpError.js";
 import { nanoid } from "nanoid";
 import sgMail from "@sendgrid/mail";
 
-export async function registerUser({ email, password }, host) {
+export async function registerUser({ email, password, timezone = 'UTC'}, host) {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw HttpError(409, "Email in use");
@@ -22,6 +22,7 @@ export async function registerUser({ email, password }, host) {
     avatarURL, // Store the avatar URL in the User record
     verificationToken,
     verify: false,
+    timezone
   });
   await newUser.save();
 
@@ -59,6 +60,7 @@ export async function loginUser({ email, password }) {
   return {
     token,
     user: {
+      userId: user._id,
       email: user.email,
       subscription: user.subscription,
     },
@@ -70,8 +72,24 @@ export async function logoutUser(user) {
   await user.save();
 }
 
+export async function updateUserDetails(userId, updateData) {
+  if (updateData.password) {
+    updateData.password = await bcrypt.hash(updateData.password, 12);
+  }
+  const user = await User.findByIdAndUpdate(
+    userId,
+    updateData,
+    { new: true }
+  );
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user;
+}
+
 export async function getCurrentUser(user) {
   return {
+    userId: user._id,
     email: user.email,
     subscription: user.subscription,
   };

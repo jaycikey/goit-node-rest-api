@@ -6,6 +6,7 @@ import morgan from "morgan";
 import cors from "cors";
 import usersRouter from "./routes/usersRouter.js";
 import contactsRouter from "./routes/contactsRouter.js";
+import waterRouter from "./routes/waterRouter.js";
 import dotenv from "dotenv";
 import sgMail from "@sendgrid/mail";
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/users", usersRouter);
 app.use("/api/contacts", contactsRouter);
+app.use("/api/water", waterRouter);
 
 const connectDB = async () => {
   try {

@@ -4,6 +4,7 @@ import {
   logoutUser,
   getCurrentUser,
   updateUserSubscription,
+  updateUserDetails,
 } from "../services/userServices.js";
 import User from "../models/User.js";
 import fs from "fs/promises";
@@ -13,8 +14,9 @@ import sgMail from "@sendgrid/mail";
 
 export const register = async (req, res, next) => {
   try {
+    const { email, password, timezone } = req.body;
     const host = req.headers.host;
-    const user = await registerUser(req.body, host);
+    const user = await registerUser({ email, password, timezone }, host);
     res.status(201).json(user);
   } catch (error) {
     next(error);
@@ -34,6 +36,27 @@ export const logout = async (req, res, next) => {
   try {
     await logoutUser(req.user);
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUser = async (req, res, next) => {
+  const { id } = req.params;
+  const { email, password, subscription, timezone } = req.body;
+  try {
+    const updatedUser = await updateUserDetails(id, { email, password, subscription, timezone });
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const sanitizedUser = {
+      email: updatedUser.email,
+      subscription: updatedUser.subscription,
+      avatarURL: updatedUser.avatarURL,
+      verify: updatedUser.verify,
+      timezone: updatedUser.timezone
+    };
+    res.json({ message: "User updated", user: sanitizedUser });
   } catch (error) {
     next(error);
   }

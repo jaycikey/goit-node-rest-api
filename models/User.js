@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Verify token is required"],
   },
+  timezone: {
+    type: String,
+    default: 'UTC' // Додати поле часового поясу зі значенням за замовчуванням 'UTC'
+  },
 });
 
 // Middleware, яке динамічно змінює валідацію verificationToken
